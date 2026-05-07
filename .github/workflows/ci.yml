@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ] # Спрацьовує при пуші в гілку main
+    branches: [ main ]
 
 jobs:
   build:
@@ -12,9 +12,9 @@ jobs:
       - name: Build and Test
         run: echo "Running tests..."
 
-deploy:
+  deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,7 +24,7 @@ deploy:
           mkdir -p ~/.ssh
           echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -L ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy via SSH
         run: |
