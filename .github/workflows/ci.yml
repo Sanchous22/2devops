@@ -2,28 +2,30 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ] # Спрацьовує при пуші в гілку main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build project
-        run: echo "Building..."
+      - name: Build and Test
+        run: echo "Running tests..."
 
-  deploy:
+deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy via SSH
         run: |
           ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'bash ~/deploy.sh'
