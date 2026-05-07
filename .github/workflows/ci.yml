@@ -12,20 +12,14 @@ jobs:
       - name: Build and Test
         run: echo "Running tests..."
 
-  deploy:
+deploy:
     needs: build
     runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH
+      - name: Run deployment script
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -L ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy via SSH
-        run: |
-          ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'bash ~/deploy.sh'
+          chmod +x ~/deploy.sh
+          bash ~/deploy.sh
